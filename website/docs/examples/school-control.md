@@ -14,9 +14,56 @@ Create a file named `Student.java` with the following attributes:
 Include methods such as:
 - `updateGrade(int newGrade)`: Update the student's grade
 
+Example implementation:
+```bash
+public class Student {
+    private String id;
+    private String name;
+    private int grade;
+
+    public Student(String id, String name, int grade) {
+        this.id = id;
+        this.name = name;
+        this.grade = grade;
+    }
+
+    public void updateGrade(int newGrade) {
+        this.grade = newGrade;
+    }
+
+    @Override
+    public String toString() {
+        return id + " - " + name + " (Grade: " + grade + ")";
+    }
+}
+```
+
 ## Step 3: Implement the JSON Adapter
 Create `SchoolControlJSONAdapter.java` extending `JSONAdapter<Student>`.  
 This adapter will handle serialization and deserialization of student data to and from JSON.
+
+Example:
+```bash
+public class SchoolControlJSONAdapter extends JSONAdapter<Student> {
+    @Override
+    public JSONObject toJSON(Student student) {
+        JSONObject json = new JSONObject();
+        json.put("id", student.getId());
+        json.put("name", student.getName());
+        json.put("grade", student.getGrade());
+        return json;
+    }
+
+    @Override
+    public Student fromJSON(JSONObject json) {
+        return new Student(
+            json.getString("id"),
+            json.getString("name"),
+            json.getInt("grade")
+        );
+    }
+}
+```
 
 ## Step 4: Implement the App
 Create `SchoolControlApp.java` extending `JMiniApp`.  
@@ -25,9 +72,45 @@ Implement the following methods:
 - `run()`: Display the interactive menu and handle user input
 - `shutdown()`: Save student data before exiting
 
+Example:
+```bash
+public class SchoolControlApp extends JMiniApp {
+    private List<Student> students = new ArrayList<>();
+
+    @Override
+    public void initialize() {
+        System.out.println("Initializing School Control App...");
+    }
+
+    @Override
+    public void run() {
+        System.out.println("=== School Control App ===");
+        // Menu logic here
+    }
+
+    @Override
+    public void shutdown() {
+        System.out.println("Shutting down and saving data...");
+    }
+}
+```
+
 ## Step 5: Bootstrap the App
 Create `SchoolControlAppRunner.java` using `JMiniAppRunner`.  
 Register the `SchoolControlJSONAdapter` with `.withAdapters()` and configure the app name and model class.
+
+Example:
+```bash
+public class SchoolControlAppRunner {
+    public static void main(String[] args) {
+        new JMiniAppRunner()
+            .withAdapters(new SchoolControlJSONAdapter())
+            .withApp(new SchoolControlApp())
+            .run();
+    }
+}
+```
+
 
 ## Step 6: Build the project
 From the **project root** (not the examples/school-control directory):
@@ -104,4 +187,5 @@ Student list imported successfully from SchoolControl.json!
 ```
 ## Author
 - Name: Israel Damian Villares Matos
+
 - Group: 2
